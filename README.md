@@ -45,6 +45,33 @@ It is designed for **real-world developer workflows**, especially when working w
 
 ---
 
+## 🤔 Why I wrote this script
+
+I wrote **LH Proxy Helper** out of frustration with managing proxies in real-world development environments.
+
+In practice, I often work on remote servers or machines with restricted network access.
+Setting up an SSH tunnel is usually straightforward, but **managing proxy environment variables is not**:
+
+- Forgetting to unset proxies breaks other tasks
+- Different tools require different proxy protocols
+- Running one command with proxy without polluting the whole environment is surprisingly painful
+- Debugging whether the tunnel or the proxy is actually working wastes time
+
+I wanted something that is:
+
+- Transparent — no magic, just environment variables
+- Non-intrusive — affects only the current shell session
+- Practical — optimized for real tools like `pip`, `conda`, `git`, and Python scripts
+- Easy to debug — clear status and diagnostics
+
+So instead of copying commands and exporting variables by hand every time,
+I wrote a small Bash script to make this workflow predictable and safe.
+
+This project is simply a distilled version of what I use every day.
+If it saves you even a few minutes of setup or debugging, it has already done its job.
+
+---
+
 ## 📦 Requirements
 
 Make sure the following tools are available:
