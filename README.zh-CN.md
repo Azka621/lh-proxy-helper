@@ -1,250 +1,150 @@
-# ⭐ LH Proxy Helper —— 面向开发者的轻量级 SSH 代理辅助脚本
+# ⭐ LH Proxy Helper (Nx Edition)
 
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Shell](https://img.shields.io/badge/shell-bash-blue)
 ![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS-lightgrey)
-![Version](https://img.shields.io/badge/version-v0.1.0-blueviolet)
+![Version](https://img.shields.io/badge/version-v1.0.0-blueviolet)
 
-🌐 语言：简体中文 | [English](README.md)
+🌐 语言: [English](README.md) | **简体中文**
 
-> 一个面向开发者的轻量级 SSH 代理辅助脚本
-> 
-> 专注解决：代理开启混乱、环境污染、调试困难的问题
+> **为开发者打造的轻量级、可靠的 SSH 代理与端口映射辅助工具。**
 
 ---
 
 ## 🚀 这是什么？
 
-**LH Proxy Helper** 是一个 **单文件 Bash 脚本**，用于简化以下操作：
+**LH Proxy Helper** (命令前缀: `nx`) 是一个单文件的 Bash 脚本，专为解决在受限网络环境（如内网服务器、远程开发机）下的开发痛点而生。
 
-* 开启 / 关闭代理环境变量
-* 管理 SSH 反向隧道代理
-* 在 **SOCKS5H / SOCKS5 / HTTP** 代理模式间切换
-* 对**单条命令**临时启用代理（不污染环境）
-* 诊断 SSH 隧道与 HTTPS 连通性问题
-
-它来源于**真实开发场景**，特别适用于：
-
-* 🌐 网络受限环境
-* 🖥️ 远程服务器 / 跳板机
-* 📦 包管理器（pip / conda / git）
-* 🐍 Python 脚本（requests / httpx / huggingface）
+它可以帮你轻松管理：
+* **代理环境变量**：一键切换 `http_proxy`, `https_proxy` 和 `ALL_PROXY`。
+* **智能模式检测**：自动检测最适合的代理模式 (`socks5h` > `socks5` > `http`)。
+* **单次命令执行**：仅让当前命令（如 `git`, `pip`）走代理，不污染全局环境。
+* **端口映射 (`nxmap`)**：极速生成本地到远程的端口转发命令（查看 TensorBoard/Jupyter 神器）。
 
 ---
 
-## ✨ 特性一览
+## ✨ 核心功能
 
-* 🔌 一条命令开启 / 关闭代理
-* 🧠 自动检测可用代理模式
-* 🎯 单命令代理执行（`lhrun`，强烈推荐）
-* 🔍 SSH 隧道 + HTTPS 联合诊断
-* 🌍 支持 SOCKS5H / SOCKS5 / HTTP
-* 🌐 中英文提示自由切换
-* 🧪 内置自检与状态查看
-* 📄 单文件、无额外依赖
+* 🔌 **零依赖**：纯 Bash 编写，仅需标准工具 (`ssh`, `curl`, `ss`)。
+* ⚡ **极速切换**：`nxon` 开启，`nxoff` 关闭，即刻生效。
+* 🎯 **作用域控制**：使用 `nxrun` 仅为单条命令挂载代理。
+* 🔍 **诊断工具**：内置 `nxcheck` 和 `nxstatus`，快速排查 SSH 隧道连通性。
+* 🌉 **端口转发**：使用 `nxmap` 一键生成 SSH 隧道命令，轻松访问远程 Web 服务。
+* 🌍 **双语支持**：支持中文和英文提示 (`nxzh` / `nxen`)。
 
 ---
 
-## 🤔 为什么我写了这个脚本
+## 📥 安装指南
 
-我写 **LH Proxy Helper**，完全是被真实开发场景“逼出来的”。
+1.  **克隆仓库：**
+    ```bash
+    git clone https://github.com/LiHang-CV/lh-proxy-helper.git
+    cd lh-proxy-helper
+    ```
 
-在实际工作中，我经常需要在**网络受限的环境**或**远程服务器**上开发。
-SSH 隧道本身并不复杂，但真正麻烦的是**代理环境的管理**：
+2.  **加载脚本：**
+    你可以直接运行，但建议将其添加到 shell 配置文件中以获得最佳体验。
+    ```bash
+    # 将此行添加到你的 ~/.bashrc 或 ~/.zshrc
+    source /path/to/lh-proxy-helper/nx_proxy.sh
+    ```
 
-- 忘记关闭代理，导致其他命令莫名其妙失败
-- 不同工具对代理协议的支持差异很大
-- 只想让某一条命令走代理，却污染了整个 shell 环境
-- 出问题时，很难快速判断是隧道、代理还是工具本身的问题
-
-我想要的是一个：
-
-- **透明的**：不搞黑魔法，只操作环境变量
-- **不侵入的**：只影响当前 shell，会话结束即恢复
-- **实用的**：为 `pip`、`conda`、`git`、Python 脚本等真实工具优化
-- **可诊断的**：能快速知道“到底哪里出了问题”
-
-于是，与其每次手动 export / unset 一堆变量，
-不如把这些重复、容易出错的步骤整理成一个可靠的小脚本。
-
-**LH Proxy Helper 本质上就是我每天在用的工具的提炼版。**  
-如果它能帮你少踩一次坑、少浪费几分钟排查时间，那它就已经完成使命了。
-
----
-
-## 📦 运行环境要求
-
-需要系统中存在以下工具（大多数 Linux 已默认安装）：
-
-* `bash`
-* `ssh`
-* `curl`
-* `ss`（来自 `iproute2`）
-
----
-
-## 📥 安装
-
-```bash
-git clone https://github.com/LiHang-CV/lh-proxy-helper.git
-cd lh-proxy-helper
-chmod +x lh_proxy.sh
-```
-
-加载到当前 shell：
-
-```bash
-source /path/to/lh_proxy.sh
-```
-
-> 💡 建议把 `source` 写入 `~/.bashrc` 或 `~/.zshrc`，永久生效。
+3.  **生效配置：**
+    ```bash
+    source ~/.bashrc
+    ```
 
 ---
 
 ## ⚙️ 配置说明
 
-编辑 `lh_proxy.sh` 中的 **User Configuration / 用户配置** 部分：
+请打开 `nx_proxy.sh` 并修改文件顶部的 **用户配置 (User Configuration)** 区域：
 
 ```bash
-LH_LANG="<LANG>"                          # zh / en
-LH_SSH_USER="<SSH_USER>"                  # SSH 用户名
-LH_SSH_HOST="<SSH_HOST>"                  # SSH 主机地址或域名
-LH_SSH_PORT="<SSH_PORT>"                  # 通常为 22
-LH_LOCAL_PROXY_HOST="<LOCAL_PROXY_HOST>"  # 通常为 127.0.0.1
-LH_LOCAL_PROXY_PORT="<LOCAL_PROXY_PORT>"  # 如 7890（Clash / V2Ray）
-LH_REMOTE_PROXY_PORT="<REMOTE_PROXY_PORT>"# 通常为 1080
-LH_TEST_URL="<TEST_URL>"                  # 如 https://www.google.com
+# ==========================================
+# User Configuration / 用户配置
+# ==========================================
+NX_LANG="zh"                    # 默认提示语言: 'zh' (中文) 或 'en' (英文)
+NX_SSH_USER="your_username"     # 远程服务器登录用户名
+NX_SSH_HOST="192.168.1.100"     # 远程服务器 IP 或域名
+NX_SSH_PORT="22"                # 远程 SSH 端口
+NX_LOCAL_PROXY_HOST="127.0.0.1"
+NX_LOCAL_PROXY_PORT="7890"      # 本地代理软件的端口 (如 Clash/v2ray 的混合端口)
+NX_REMOTE_PROXY_PORT="1080"     # 映射到远程服务器上的端口
+
 ```
 
 ---
 
-## 🔑 必须先启动 SSH 隧道
+## 🧭 使用指南
 
-在开启代理前，需要先在本地启动 SSH 反向隧道：
+### 1. 基础代理控制
+
+| 命令 | 说明 |
+| --- | --- |
+| **`nxon`** | 开启代理 (自动检测最佳模式: socks5h > socks5 > http)。 |
+| **`nxon http`** | 强制开启 **HTTP** 模式 (兼容性更好)。 |
+| **`nxoff`** | 关闭代理并清理环境变量，恢复原始状态。 |
+
+### 2. 单次命令模式 (强烈推荐)
+
+不想修改全局变量？仅让某条命令走代理：
 
 ```bash
-ssh -N -R <REMOTE_PROXY_PORT>:<LOCAL_PROXY_HOST>:<LOCAL_PROXY_PORT> \
-    <SSH_USER>@<SSH_HOST> -p <SSH_PORT>
+# 自动检测模式
+nxrun python train.py
+
+# 强制 HTTP 模式 (解决 conda/huggingface 报错)
+nxrun http conda install numpy
+
 ```
+
+### 3. 端口映射 (远程 -> 本地)
+
+想在本地浏览器查看运行在服务器上的 **TensorBoard** 或 **Jupyter Lab**？
+
+```bash
+# 用法: nxmap <服务器端口> [本地PC端口]
+
+nxmap 6006
+# 输出: 检查端口并生成将【服务器:6006】映射到【本地:6006】的 SSH 命令
+
+nxmap 8888 9000
+# 输出: 生成将【服务器:8888】映射到【本地:9000】的命令
+
+```
+
+### 4. 状态与诊断
+
+| 命令 | 说明 |
+| --- | --- |
+| **`nxstatus`** | 显示综合状态 (环境变量 + 隧道检查 + 连通性测试)。 |
+| **`nxcheck`** | 仅检查 SSH 隧道是否存活以及 Google 是否可达。 |
+| **`nxinfo`** | 系统自检 (检查依赖工具和环境配置)。 |
 
 ---
 
-## 🧭 使用示例
+## 💡 最佳实践 (避坑指南)
 
-### 自动检测并开启代理（推荐）
+不同的工具适合不同的代理协议，以下是基于经验的建议：
 
-```bash
-lhon
-```
-
-### 指定代理模式
-
-```bash
-lhon socks5h
-lhon http
-```
-
-### 单条命令使用代理（强烈推荐）
-
-```bash
-lhrun http python script.py
-```
-
-### 关闭代理并恢复环境
-
-```bash
-lhoff
-```
-
-### 查看当前代理环境变量
-
-```bash
-lhproxy
-```
-
-### 检查 SSH 隧道与 HTTPS
-
-```bash
-lhcheck
-```
-
-### 查看综合状态
-
-```bash
-lhstatus
-```
+| 场景 / 工具 | 推荐方案 | 原因 |
+| --- | --- | --- |
+| **`git`, `wget`, `curl`** | `nxon` (SOCKS5H) | **最安全**。在远程解析 DNS，防止 DNS 污染。 |
+| **`pip install`** | `nxon` | pip 对 SOCKS5 支持良好。 |
+| **`conda install`** | `nxrun http ...` | Conda 对 SOCKS 支持较差，HTTP 模式更稳定。 |
+| **`huggingface_hub`** | `nxrun http ...` | Python `httpx` 库有时在 SOCKS 模式下会报错。 |
+| **模型训练 (Training)** | **`nxoff`** | **重要**。避免代理带来的网络抖动影响 GPU 通信。 |
 
 ---
 
-## 🐍 Python / 包管理器使用建议
-
-| 场景                  | 推荐方式                           |
-| ------------------- | ------------------------------ |
-| wget / curl / git   | `lhon`（默认 socks5h）             |
-| pip install         | `lhon`                         |
-| conda install       | `lhrun http conda install ...` |
-| httpx / huggingface | `lhrun http python script.py`  |
-| 长时间训练 / 推理          | `lhoff`（避免代理抖动）                |
-
----
-
-## 🌐 语言切换
-
-```bash
-lhzh   # 中文
-lhen   # 英文
-```
-
----
-
-## 🧪 自检与诊断
-
-```bash
-lhinfo
-```
-
-将显示：
-
-* 当前 shell / 用户 / 主机
-* 必要工具是否可用
-* 代理与 SSH 隧道状态
-
----
-
-## 🛡️ 安全说明与免责声明
-
-本脚本具有以下安全特性：
-
-* ❌ 不保存任何账号或密码
-* ❌ 不修改系统级代理配置
-* ❌ 不写入配置文件
-* ✅ 仅作用于当前 shell 会话
-
-请在遵守当地法律法规及网络使用规范的前提下使用。
-
----
-
-## 👤 作者 & 联系方式
+## 👤 作者
 
 **Li Hang**
 
-📧 [lihang041011@gmail.com](mailto:lihang041011@gmail.com)
+* 邮箱: lihang041011 [at] gmail.com
+* GitHub: [@LiHang-CV](https://www.google.com/search?q=https://github.com/LiHang-CV)
 
----
-
-## 📄 开源协议
+## 📄 许可证
 
 本项目基于 **MIT License** 开源。
-
----
-
-## ⭐ 为什么你可能会想 Star 这个项目？
-
-* Bash 脚本结构清晰、可读性高
-* 解决的是开发者真实会遇到的问题
-* 不侵入、不“魔法”、不污染环境
-* 非常适合 fork 后按自己需求定制
-
-如果这个脚本对你有帮助，欢迎 ⭐ Star 支持 🙂
-
----

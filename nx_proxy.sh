@@ -6,10 +6,13 @@
 # Author: Li Hang
 # Email: lihang041011 [at] gmail.com (replace [at] with @)
 # Created: 2026-01-05
+# Last Modified: 2026-01-15
 #
 # 作者：李航
 # 邮箱: lihang041011 [at] gmail.com (replace [at] with @)
 # 创建时间：2026-01-05
+#最近一次修改：2026-01-15
+#
 # ----------------------- Script (EN) ----------------------------
 # This script is a lightweight SSH-based proxy helper.
 # It is designed to simplify enabling, disabling, testing,
@@ -73,23 +76,25 @@
 # lhinfo      : Display environment information and self-test
 # lhhint      : Show usage recommendations and best practices
 # lhhelp      : Display command help information
+# lhmap       : Generate port mapping command (Server -> Local PC)
 # _lh_msg     : Internal message dispatcher with i18n support
 # _lh_test_proxy : Test proxy connectivity via HTTPS request
 #
-# -------------------- 函数（中文）---------------------------
-# lhzh        : 切换为中文提示
-# lhen        : 切换为英文提示
-# lhon        : 开启代理环境变量
-# lhoff       : 关闭代理并恢复原有环境变量
-# lhrun       : 单条命令在代理环境下运行
-# lhproxy     : 查看当前代理环境变量
-# lhcheck     : 检查 SSH 隧道与 HTTPS 连通性
-# lhstatus    : 显示代理与隧道综合状态
-# lhinfo      : 显示环境信息并执行自检
-# lhhint      : 显示使用建议与最佳实践
-# lhhelp      : 显示命令帮助信息
-# _lh_msg     : 内部多语言消息分发函数
-# _lh_test_proxy : 通过 HTTPS 请求测试代理连通性
+# -------------------- 功能（中文）-------------------------------
+# nxzh        : 切换为中文提示
+# nxen        : 切换为英文提示
+# nxon        : 开启代理环境变量
+# nxoff       : 关闭代理并恢复原有环境变量
+# nxrun       : 单条命令在代理环境下运行
+# nxproxy     : 查看当前代理环境变量
+# nxcheck     : 检查 SSH 隧道与 HTTPS 连通性
+# nxstatus    : 显示代理与隧道综合状态
+# nxinfo      : 显示环境信息并执行自检
+# nxhint      : 显示使用建议与最佳实践
+# nxhelp      : 显示命令帮助信息
+# nxmap       : 生成端口映射命令 (Server -> Local PC)
+# _nx_msg     : 内部多语言消息分发函数
+# _nx_test_proxy : 通过 HTTPS 请求测试代理连通性
 #
 # ---------------- Configuration (EN) ----------------------------
 # LH_LANG                : Default language for messages (zh / en)
@@ -117,43 +122,44 @@
 # User Configuration / 用户配置
 # ================================================================
 
-LH_LANG="<LANG>"                          # Default language for messages (zh / en)(usually en)|默认提示语言（通常为 zh）
-LH_SSH_USER="<SSH_USER>"                  # SSH username for remote host|远程 SSH 登录用户名
-LH_SSH_HOST="<SSH_HOST>"                  # Remote SSH host address or domain|远程 SSH 主机地址或域名
-LH_SSH_PORT="<SSH_PORT>"                  # Remote SSH port(usually 22)|远程 SSH 端口（通常为 22）
-LH_LOCAL_PROXY_HOST="<LOCAL_PROXY_HOST>"  # Local proxy listen address (usually 127.0.0.1)|本地代理监听地址（通常为 127.0.0.1）
-LH_LOCAL_PROXY_PORT="<LOCAL_PROXY_PORT>"  # Local proxy listen port (e.g. Clash / V2Ray)(usually 7890)|本地代理监听端口（如 Clash / V2Ray）（通常为 7890）
-LH_REMOTE_PROXY_PORT="<REMOTE_PROXY_PORT>"# Remote exposed proxy port via SSH tunnel(usually 1080)|通过 SSH 隧道暴露到远端的代理端口（通常为 1080）
-LH_TEST_URL="<TEST_URL>"                  # URL used to test proxy connectivity (HTTPS)(usually https://www.google.com)|用于测试代理连通性的 HTTPS 地址（通常为 https://www.google.com）
+NX_LANG="<LANG>"                          # Default language for messages (zh / en)(usually en)|默认提示语言（通常为 zh）
+NX_SSH_USER="<SSH_USER>"                  # SSH username for remote host|远程 SSH 登录用户名
+NX_SSH_HOST="<SSH_HOST>"                  # Remote SSH host address or domain|远程 SSH 主机地址或域名
+NX_SSH_PORT="<SSH_PORT>"                  # Remote SSH port(usually 22)|远程 SSH 端口（通常为 22）
+NX_LOCAL_PROXY_HOST="<LOCAL_PROXY_HOST>"  # Local proxy listen address (usually 127.0.0.1)|本地代理监听地址（通常为 127.0.0.1）
+NX_LOCAL_PROXY_PORT="<LOCAL_PROXY_PORT>"  # Local proxy listen port (e.g. Clash / V2Ray)(usually 7890)|本地代理监听端口（如 Clash / V2Ray）（通常为 7890）
+NX_REMOTE_PROXY_PORT="<REMOTE_PROXY_PORT>"# Remote exposed proxy port via SSH tunnel(usually 1080)|通过 SSH 隧道暴露到远端的代理端口（通常为 1080）
+NX_TEST_URL="<TEST_URL>"                  # URL used to test proxy connectivity (HTTPS)(usually https://www.google.com)|用于测试代理连通性的 HTTPS 地址（通常为 https://www.google.com）
 
-lhzh () {
-    LH_LANG="zh"
+nxzh () {
+    NX_LANG="zh"
     echo "🇨🇳 已切换为中文提示"
 }
 
-lhen () {
-    LH_LANG="en"
+nxen () {
+    NX_LANG="en"
     echo "🇺🇸 Switched to English messages"
 }
 
-_lh_msg () {
+_nx_msg () {
     key="$1"
     arg="$2"
+    arg2="$3"
 
-    case "$LH_LANG:$key" in
+    case "$NX_LANG:$key" in
         zh:proxy_not_listening)
-            echo "❌ 代理不可用：${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT} 未监听"
+            echo "❌ 代理不可用：${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT} 未监听"
             ;;
         en:proxy_not_listening)
-            echo "❌ Proxy NOT available: ${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT} not listening"
+            echo "❌ Proxy NOT available: ${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT} not listening"
             ;;
         zh:start_ssh)
             echo "👉 请先在本地开启 SSH 隧道："
-            echo "   ssh -N -R ${LH_REMOTE_PROXY_PORT}:${LH_LOCAL_PROXY_HOST}:${LH_LOCAL_PROXY_PORT} ${LH_SSH_USER}@${LH_SSH_HOST} -p ${LH_SSH_PORT}"
+            echo "   ssh -N -R ${NX_REMOTE_PROXY_PORT}:${NX_LOCAL_PROXY_HOST}:${NX_LOCAL_PROXY_PORT} ${NX_SSH_USER}@${NX_SSH_HOST} -p ${NX_SSH_PORT}"
             ;;
         en:start_ssh)
             echo "👉 Please start SSH tunnel first:"
-            echo "   ssh -N -R ${LH_REMOTE_PROXY_PORT}:${LH_LOCAL_PROXY_HOST}:${LH_LOCAL_PROXY_PORT} ${LH_SSH_USER}@${LH_SSH_HOST} -p ${LH_SSH_PORT}"
+            echo "   ssh -N -R ${NX_REMOTE_PROXY_PORT}:${NX_LOCAL_PROXY_HOST}:${NX_LOCAL_PROXY_PORT} ${NX_SSH_USER}@${NX_SSH_HOST} -p ${NX_SSH_PORT}"
             ;;
         zh:auto_detect)
             echo "🔍 正在自动检测代理模式..."
@@ -162,10 +168,10 @@ _lh_msg () {
             echo "🔍 Auto-detecting proxy mode..."
             ;;
         zh:proxy_on)
-            echo "✅ LH 代理已开启：$arg"
+            echo "✅ Nx 代理已开启：$arg"
             ;;
         en:proxy_on)
-            echo "✅ LH proxy ON: $arg"
+            echo "✅ Nx proxy ON: $arg"
             ;;
         zh:no_working_proxy)
             echo "❌ 未找到可用的代理模式"
@@ -174,22 +180,22 @@ _lh_msg () {
             echo "❌ No working proxy mode found"
             ;;
         zh:proxy_off)
-            echo "🧹 LH 代理已关闭（环境已恢复）"
+            echo "🧹 Nx 代理已关闭（环境已恢复）"
             ;;
         en:proxy_off)
-            echo "🧹 LH proxy OFF (environment restored)"
+            echo "🧹 Nx proxy OFF (environment restored)"
             ;;
         zh:tunnel_ok)
-            echo "  ✅ SSH 隧道端口 ${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT} 正在监听"
+            echo "  ✅ SSH 隧道端口 ${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT} 正在监听"
             ;;
         en:tunnel_ok)
-            echo "  ✅ SSH tunnel port ${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT} is listening"
+            echo "  ✅ SSH tunnel port ${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT} is listening"
             ;;
         zh:tunnel_bad)
-            echo "  ❌ SSH 隧道端口 ${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT} 未监听"
+            echo "  ❌ SSH 隧道端口 ${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT} 未监听"
             ;;
         en:tunnel_bad)
-            echo "  ❌ SSH tunnel port ${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT} NOT listening"
+            echo "  ❌ SSH tunnel port ${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT} NOT listening"
             ;;
         zh:https_ok)
             echo "  ✅ 可通过代理访问外部 HTTPS"
@@ -216,28 +222,28 @@ _lh_msg () {
             echo "🚫 No proxy environment set"
             ;;
         zh:check_title)
-            echo "🔍 LH 代理诊断："
+            echo "🔍 Nx 代理诊断："
             ;;
         en:check_title)
-            echo "🔍 LH proxy diagnostics:"
+            echo "🔍 Nx proxy diagnostics:"
             ;;
         zh:status_title)
-            echo "📊 LH 代理状态："
+            echo "📊 Nx 代理状态："
             ;;
         en:status_title)
-            echo "📊 LH proxy status:"
+            echo "📊 Nx proxy status:"
             ;;
         zh:help_title)
-            echo "LH 代理辅助工具"
+            echo "Nx 代理辅助工具"
             ;;
         en:help_title)
-            echo "LH proxy helper commands"
+            echo "Nx proxy helper commands"
             ;;
         zh:selftest_title)
-            echo "🧪 LH 代理自检"
+            echo "🧪 Nx 代理自检"
             ;;
         en:selftest_title)
-            echo "🧪 LH proxy self-test"
+            echo "🧪 Nx proxy self-test"
             ;;
         zh:selftest_done)
             echo "✅ 自检完成"
@@ -245,26 +251,58 @@ _lh_msg () {
         en:selftest_done)
             echo "✅ Self-test completed"
             ;;
+        zh:map_usage)
+            echo "👉 用法: nxmap <服务器端口> [本地PC端口]"
+            echo "   例如: nxmap 8888 (将服务器8888映射到本地8888)"
+            echo "   例如: nxmap 6006 9000 (将服务器TensorBoard映射到本地9000)"
+            ;;
+        en:map_usage)
+            echo "👉 Usage: nxmap <ServerPort> [LocalPCPort]"
+            echo "   Ex: nxmap 8888 (Map server 8888 to local 8888)"
+            echo "   Ex: nxmap 6006 9000 (Map server TensorBoard to local 9000)"
+            ;;
+        zh:map_port_not_listening)
+            echo "👉 请先在本地开启 SSH 隧道："
+            echo "   ssh -N -L ${LOCAL_PORT}:127.0.0.1:${SERVER_PORT} ${NX_SSH_USER}@${NX_SSH_HOST} -p ${NX_SSH_PORT}"
+            echo "✅ 端口映射指南 (Server:$arg -> PC:$arg2)"
+            ;;
+        en:map_port_not_listening)
+            echo "👉 Please start SSH tunnel first:"
+            echo "   ssh -N -L ${LOCAL_PORT}:127.0.0.1:${SERVER_PORT} ${NX_SSH_USER}@${NX_SSH_HOST} -p ${NX_SSH_PORT}"
+            echo "✅ Port Mapping Guide (Server:$arg -> PC:$arg2)"
+            ;;
+        zh:nxrun_help)
+            echo "❌ 错误：未指定要运行的命令"
+            echo "👉 用法: nxrun [模式] <命令>"
+            echo "   例如: nxrun python main.py     (自动检测模式)"
+            echo "   例如: nxrun http git pull      (指定 http 模式)"
+            ;;
+        en:nxrun_help)
+            echo "❌ Error: No command specified"
+            echo "👉 Usage: nxrun [mode] <command>"
+            echo "   Ex: nxrun python main.py     (Auto-detect)"
+            echo "   Ex: nxrun http git pull      (Force http)"
+            ;;
         zh:info_shell|en:info_shell) echo "Shell" ;;
         zh:info_user|en:info_user) echo "User" ;;
         zh:info_host|en:info_host) echo "Host" ;;
         zh:info_lang|en:info_lang) echo "LANG" ;;
-        zh:info_lh_lang|en:info_lh_lang) echo "LH_LANG" ;;
+        zh:info_nx_lang|en:info_nx_lang) echo "NX_LANG" ;;
         zh:required_tools|en:required_tools) echo "Required tools" ;;
         *) echo "$key" ;;
     esac
 }
 
-_lh_test_proxy () {
-    curl -Is --connect-timeout 5 --max-time 8 "$LH_TEST_URL" >/dev/null 2>&1
+_nx_test_proxy () {
+    curl -Is --connect-timeout 5 --max-time 8 "$NX_TEST_URL" >/dev/null 2>&1
 }
 
-lhon () {
+nxon () {
     MODE="$1"
 
-    if ! ss -lnt 2>/dev/null | grep -q "${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT}"; then
-        _lh_msg proxy_not_listening
-        _lh_msg start_ssh
+    if ! ss -lnt 2>/dev/null | grep -q "${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT}"; then
+        _nx_msg proxy_not_listening
+        _nx_msg start_ssh
         return 1
     fi
 
@@ -274,16 +312,16 @@ lhon () {
 
     if [ -z "$MODE" ]; then
         CANDIDATES="socks5h socks5 http"
-        _lh_msg auto_detect
+        _nx_msg auto_detect
     else
         CANDIDATES="$MODE"
     fi
 
     for m in $CANDIDATES; do
         case "$m" in
-            socks5h) PROXY_URL="socks5h://${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT}" ;;
-            socks5)  PROXY_URL="socks5://${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT}" ;;
-            http)    PROXY_URL="http://${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT}" ;;
+            socks5h) PROXY_URL="socks5h://${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT}" ;;
+            socks5)  PROXY_URL="socks5://${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT}" ;;
+            http)    PROXY_URL="http://${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT}" ;;
             *) continue ;;
         esac
 
@@ -291,26 +329,47 @@ lhon () {
         export https_proxy="$PROXY_URL"
         export ALL_PROXY="$PROXY_URL"
 
-        if _lh_test_proxy; then
-            _lh_msg proxy_on "$PROXY_URL"
+        if _nx_test_proxy; then
+            _nx_msg proxy_on "$PROXY_URL"
             return 0
         fi
     done
 
-    _lh_msg no_working_proxy
-    lhoff
+    _nx_msg no_working_proxy
+    nxoff
     return 1
 }
 
-lhoff () {
-    [ -n "$_OLD_HTTP_PROXY" ] && export http_proxy="$_OLD_HTTP_PROXY" || unset http_proxy
-    [ -n "$_OLD_HTTPS_PROXY" ] && export https_proxy="$_OLD_HTTPS_PROXY" || unset https_proxy
-    [ -n "$_OLD_ALL_PROXY" ] && export ALL_PROXY="$_OLD_ALL_PROXY" || unset ALL_PROXY
+nxoff () {
+    if [ -n "$_OLD_HTTP_PROXY" ]; then
+        export http_proxy="$_OLD_HTTP_PROXY"
+    else
+        unset http_proxy
+    fi
+
+    if [ -n "$_OLD_HTTPS_PROXY" ]; then
+        export https_proxy="$_OLD_HTTPS_PROXY"
+    else
+        unset https_proxy
+    fi
+
+    if [ -n "$_OLD_ALL_PROXY" ]; then
+        export ALL_PROXY="$_OLD_ALL_PROXY"
+    else
+        unset ALL_PROXY
+    fi
+
     unset _OLD_HTTP_PROXY _OLD_HTTPS_PROXY _OLD_ALL_PROXY
-    _lh_msg proxy_off
+    _nx_msg proxy_off
 }
 
-lhrun () {
+nxrun () {
+    # 1. 检查是否有参数输入
+    if [ -z "$1" ]; then
+        _nx_msg nxrun_help
+        return 1
+    fi
+
     MODE=""
     case "$1" in
         socks5h|socks5|http)
@@ -319,57 +378,84 @@ lhrun () {
             ;;
     esac
 
-    lhon "$MODE" || return 1
+    # 2. 提取模式后，检查是否还有命令
+    if [ -z "$1" ]; then
+        _nx_msg nxrun_help
+        return 1
+    fi
+
+    nxon "$MODE" || return 1
+
+    # 3. 执行命令并捕获退出码
     "$@"
-    lhoff
+    EXIT_CODE=$?
+
+    nxoff
+
+    # 4. 返回原命令的退出码
+    return $EXIT_CODE
 }
 
-lhproxy () {
+nxmap () {
+    SERVER_PORT="$1"
+    LOCAL_PORT="${2:-$SERVER_PORT}"
+
+    if [ -z "$SERVER_PORT" ]; then
+        _nx_msg map_usage
+        return 1
+    fi
+
+    if ! ss -lnt | grep -q ":$SERVER_PORT "; then
+        _nx_msg map_port_not_listening "$SERVER_PORT" "$LOCAL_PORT"
+    fi
+}
+
+nxproxy () {
     if [ -n "$http_proxy" ] || [ -n "$https_proxy" ] || [ -n "$ALL_PROXY" ]; then
-        _lh_msg which_title
+        _nx_msg which_title
         echo "  http_proxy  = ${http_proxy:-<unset>}"
         echo "  https_proxy = ${https_proxy:-<unset>}"
         echo "  ALL_PROXY   = ${ALL_PROXY:-<unset>}"
     else
-        _lh_msg no_proxy_env
+        _nx_msg no_proxy_env
     fi
 }
 
-lhcheck () {
-    _lh_msg check_title
+nxcheck () {
+    _nx_msg check_title
 
-    if ss -lnt 2>/dev/null | grep -q "${LH_LOCAL_PROXY_HOST}:${LH_REMOTE_PROXY_PORT}"; then
-        _lh_msg tunnel_ok
+    if ss -lnt 2>/dev/null | grep -q "${NX_LOCAL_PROXY_HOST}:${NX_REMOTE_PROXY_PORT}"; then
+        _nx_msg tunnel_ok
     else
-        _lh_msg tunnel_bad
+        _nx_msg tunnel_bad
         return 1
     fi
 
-    if _lh_test_proxy; then
-        _lh_msg https_ok
+    if _nx_test_proxy; then
+        _nx_msg https_ok
     else
-        _lh_msg https_bad
+        _nx_msg https_bad
     fi
 }
 
-lhstatus () {
-    _lh_msg status_title
-    lhproxy
-    lhcheck
+nxstatus () {
+    _nx_msg status_title
+    nxproxy
+    nxcheck
 }
 
-lhinfo () {
-    _lh_msg selftest_title
+nxinfo () {
+    _nx_msg selftest_title
     echo "--------------------"
 
-    echo "• $(_lh_msg info_shell)   : ${SHELL##*/}"
-    echo "• $(_lh_msg info_user)    : $(whoami)"
-    echo "• $(_lh_msg info_host)    : $(hostname)"
-    echo "• $(_lh_msg info_lang)    : ${LANG:-<unset>}"
-    echo "• $(_lh_msg info_lh_lang) : ${LH_LANG:-en}"
+    echo "• $(_nx_msg info_shell)     : ${SHELL##*/}"
+    echo "• $(_nx_msg info_user)      : $(whoami)"
+    echo "• $(_nx_msg info_host)      : $(hostname)"
+    echo "• $(_nx_msg info_lang)      : ${LANG:-<unset>}"
+    echo "• $(_nx_msg info_nx_lang)   : ${NX_LANG:-en}"
     echo
 
-    echo "• $(_lh_msg required_tools):"
+    echo "• $(_nx_msg required_tools):"
     for cmd in ss curl ssh; do
         if command -v "$cmd" >/dev/null 2>&1; then
             echo "  ✅ $cmd"
@@ -379,151 +465,169 @@ lhinfo () {
     done
     echo
 
-    lhstatus
+    nxstatus
     echo
-    _lh_msg selftest_done
+    _nx_msg selftest_done
 }
 
-lhhint () {
-    _lh_msg hint_title
+nxhint () {
+    _nx_msg hint_title
     echo
 
-    if [ "$LH_LANG" = "zh" ]; then
+    if [ "$NX_LANG" = "zh" ]; then
         cat << 'EOF'
   📥 下载 / 网络工具:
     • wget / curl / git
-        → lhon
+        → nxon
         → 默认 socks5h（DNS + HTTPS 都走代理，最安全）
 
   🐍 Python 脚本:
     • 普通 requests / 无 huggingface
-        → lhon 或 lhrun socks5 python script.py
+        → nxon 或 nxrun socks5 python script.py
 
     • huggingface_hub / httpx
-        → lhrun http python script.py
+        → nxrun http python script.py
         → 避免 socksio / httpx 的 SOCKS 依赖问题
 
   📦 包管理器:
     • conda install / update
-        → lhrun http conda install ...
+        → nxrun http conda install ...
         → conda 对 SOCKS 支持较差
 
     • pip install
-        → lhon（通常没问题）
+        → nxon（通常没问题）
 
   🚀 训练 / 推理（不下载）:
     • GPU 训练 / 长时间任务
-        → lhoff
+        → nxoff
         → 避免代理带来的性能抖动
 
+  🔌 端口转发 (Flask/Jupyter):
+    • 想在本地电脑看网页？
+        → nxmap 5000 (生成转发命令)
+
   🔍 不确定用什么？
-    • 先试：lhon
+    • 先试：nxon
     • Python 报 httpx / socksio 错 → 改用 http
 EOF
     else
         cat << 'EOF'
   📥 Download / network tools:
     • wget / curl / git
-        → lhon
+        → nxon
         → default socks5h (remote DNS + HTTPS, safest)
 
   🐍 Python scripts:
     • requests-only / no huggingface
-        → lhon or lhrun socks5 python script.py
+        → nxon or nxrun socks5 python script.py
 
     • huggingface_hub / httpx
-        → lhrun http python script.py
+        → nxrun http python script.py
         → avoids socksio / httpx SOCKS issues
 
   📦 Package managers:
     • conda install / update
-        → lhrun http conda install ...
+        → nxrun http conda install ...
         → conda has poor SOCKS support
 
     • pip install
-        → lhon (usually OK)
+        → nxon (usually OK)
 
   🚀 Training / inference (no downloads):
     • GPU training / long jobs
-        → lhoff
+        → nxoff
         → avoid proxy performance jitter
 
+  🔌 Port Forwarding (Flask/Jupyter):
+    • View web apps on local PC?
+        → nxmap 5000 (Generate forward command)
+
   🔍 Not sure?
-    • Start with: lhon
+    • Start with: nxon
     • httpx / socksio errors → switch to http
 EOF
     fi
 }
 
-lhhelp () {
-    _lh_msg help_title
+nxhelp () {
+    _nx_msg help_title
     echo
 
-    if [ "$LH_LANG" = "zh" ]; then
+    if [ "$NX_LANG" = "zh" ]; then
         cat << 'EOF'
 核心命令
 --------
 
-  lhon [mode]        开启代理（socks5h / socks5 / http）
-  lhoff              关闭代理并恢复环境
-  lhrun [mode] cmd   单次命令使用代理（推荐）
+  nxon [mode]      开启代理（socks5h / socks5 / http）
+  nxoff            关闭代理并恢复环境
+  nxrun [mode] cmd 单次命令使用代理（推荐）
+
+映射与连接
+----------
+
+  nxmap port [loc] 生成端口转发命令 (Flask/Jupyter专用)
 
 状态与诊断
 ----------
 
-  lhproxy            查看当前代理变量
-  lhcheck            检查 SSH 隧道与 HTTPS
-  lhstatus           综合状态（proxy + check）
+  nxproxy          查看当前代理变量
+  nxcheck          检查 SSH 隧道与 HTTPS
+  nxstatus         综合状态（proxy + check）
 
 信息
 ----
 
-  lhinfo             环境与工具自检
+  nxinfo           环境与工具自检
 
 帮助
 ----
 
-  lhhint             使用建议
-  lhhelp             本帮助
+  nxhint           使用建议
+  nxhelp           本帮助
 
 语言
 ----
 
-  lhzh               切换中文
-  lhen               Switch to English
+  nxzh             切换中文
+  nxen             Switch to English
 EOF
     else
         cat << 'EOF'
 Core commands
 ------------
 
-  lhon [mode]        Enable proxy (socks5h / socks5 / http)
-  lhoff              Disable proxy and restore env
-  lhrun [mode] cmd   One-shot command with proxy (recommended)
+  nxon [mode]      Enable proxy (socks5h / socks5 / http)
+  nxoff            Disable proxy and restore env
+  nxrun [mode] cmd One-shot command with proxy (recommended)
+
+Mapping & Connect
+-----------------
+
+  nxmap port [loc] Generate port forwarding command
 
 Status & diagnostics
 --------------------
 
-  lhproxy            Show proxy env vars
-  lhcheck            Check SSH tunnel & HTTPS
-  lhstatus           Combined status
+  nxproxy          Show proxy env vars
+  nxcheck          Check SSH tunnel & HTTPS
+  nxstatus         Combined status
 
 Info
 ----
 
-  lhinfo             Environment & tool self-check
+  nxinfo           Environment & tool self-check
 
 Help
 ----
 
-  lhhint             Usage hints
-  lhhelp             This help
+  nxhint           Usage hints
+  nxhelp           This help
 
 Language
 --------
 
-  lhzh               中文
-  lhen               English
+  nxzh             中文
+  nxen             English
 EOF
     fi
 }
